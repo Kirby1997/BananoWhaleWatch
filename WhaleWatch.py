@@ -88,9 +88,9 @@ def createServer():
                             tweet = sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nMaybe it's drugs!" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block
                             if lastTweet != tweet:
                                 api.PostUpdate(tweet)
-                lastsender = sender
-                lastrecipient = recipient
-                lastamount = amount
+                    lastsender = sender
+                    lastrecipient = recipient
+                    lastamount = amount
 
     except KeyboardInterrupt:
         print("\nShutting down...\n")
