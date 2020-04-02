@@ -4,5 +4,6 @@
   "access_token_key":"",
   "access_token_secret":"",
   "listenIP":"",
-  "listenPort":""
+  "listenPort":,
+  "twitacc":
 }

@@ -12,6 +12,7 @@ with open("config.json") as config:
     asec = config["access_token_secret"]
     listenIP = config["listenIP"]
     listenPort = config["listenPort"]
+    twitacc= config["twitacc"]
 
 
 api = twitter.Api(consumer_key=ckey,
@@ -20,6 +21,7 @@ api = twitter.Api(consumer_key=ckey,
                       access_token_secret=asec)
 
 print(api.VerifyCredentials())
+
 
 # Function written by Bbedward as part of MonkeyTalks
 def get_banano_address(input_text: str) -> str:
@@ -30,17 +32,19 @@ def get_banano_address(input_text: str) -> str:
         return matches[0]
     return None
 
+
 def createServer():
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     lastsender = ""
     lastamount = ""
+    lastrecipient = ""
     throttle = False
     lastTweet = ""
     try:
         serversocket.bind((listenIP, listenPort))
         serversocket.listen(5)
         while(1):
-            tweets = api.GetUserTimeline(user_id=1193564186904866818, count=1)
+            tweets = api.GetUserTimeline(user_id=twitacc, count=1)
             lastTweet = tweets[0].text
             (clientsocket, address) = serversocket.accept()
             received = clientsocket.recv(5000).decode()
@@ -61,7 +65,7 @@ def createServer():
                 block = parts[1]
                 recipient = get_banano_address(split[7])
                 amount = int(parts[2]) / 10 ** 29
-                if amount >= 50_000 and recipient != lastsender:
+                if amount >= 50_000 and recipient != lastsender and (sender != lastrecipient and amount != lastamount):
                     if sender == lastsender and not throttle:
 
                         throttle = True
@@ -85,11 +89,12 @@ def createServer():
                             if lastTweet != tweet:
                                 api.PostUpdate(tweet)
                 lastsender = sender
+                lastrecipient = recipient
                 lastamount = amount
 
     except KeyboardInterrupt:
         print("\nShutting down...\n")
-    except Exception as exc :
+    except Exception as exc:
         tweet = "I fell over! :( Ping my owner to check on me"
         serversocket.close()
         if lastTweet != tweet:
@@ -100,9 +105,6 @@ def createServer():
         createServer()
 
     serversocket.close()
-
-
-
 
 print('Access http://localhost:13345')
 createServer()
