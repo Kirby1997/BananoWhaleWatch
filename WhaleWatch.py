@@ -33,6 +33,19 @@ def get_banano_address(input_text: str) -> str:
     return None
 
 
+def send_tweet(lastTweet, tweet):
+    try:
+        if lastTweet != tweet:
+            api.PostUpdate(tweet)
+    except Exception as exc:
+        print(exc)
+        if (exc=="[{\'message\': \'Rate limit exceeded\', \'code\': 88}]"):
+            print("Rate limit has been hit. Sleeping for 15 minutes")
+            time.sleep(900)
+        else:
+            print("Well this happened...", time.ctime())
+
+
 def createServer():
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     lastsender = ""
