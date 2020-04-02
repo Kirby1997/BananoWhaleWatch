@@ -39,10 +39,18 @@ def createServer():
     lastamount = ""
     lastrecipient = ""
     throttle = False
+    ipset = False
     lastTweet = ""
     try:
-        serversocket.bind((listenIP, listenPort))
-        serversocket.listen(5)
+        while not ipset:
+            try:
+                serversocket.bind((listenIP, listenPort))
+                serversocket.listen(5)
+                ipset = True
+            except Exception as exc:
+                print(exc)
+                print("IP not bound, sleeping and then trying again")
+                time.sleep(100)
         while(1):
             tweets = api.GetUserTimeline(user_id=twitacc, count=1)
             lastTweet = tweets[0].text
