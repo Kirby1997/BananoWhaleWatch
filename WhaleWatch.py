@@ -1,13 +1,26 @@
 import twitter
 import socket
 import re
+import time
+import json
 
-api = twitter.Api(consumer_key='',
-                      consumer_secret='',
-                      access_token_key='',
-                      access_token_secret='')
+with open("config.json") as config:
+    config = json.load(config)
+    ckey = config["consumer_key"]
+    csec = config["consumer_secret"]
+    akey = config["access_token_key"]
+    asec = config["access_token_secret"]
+    listenIP = config["listenIP"]
+    listenPort = config["listenPort"]
+
+
+api = twitter.Api(consumer_key=ckey,
+                      consumer_secret=csec,
+                      access_token_key=akey,
+                      access_token_secret=asec)
 
 print(api.VerifyCredentials())
+
 # Function written by Bbedward as part of MonkeyTalks
 def get_banano_address(input_text: str) -> str:
     """Extract a banano address from a string using regex"""
@@ -22,10 +35,13 @@ def createServer():
     lastsender = ""
     lastamount = ""
     throttle = False
+    lastTweet = ""
     try:
-        serversocket.bind((socket.gethostname(), 13345))
+        serversocket.bind((listenIP, listenPort))
         serversocket.listen(5)
         while(1):
+            tweets = api.GetUserTimeline(user_id=1193564186904866818, count=1)
+            lastTweet = tweets[0].text
             (clientsocket, address) = serversocket.accept()
             received = clientsocket.recv(5000).decode()
             pieces = received.split("\n")
@@ -44,7 +60,6 @@ def createServer():
                 sender = parts[0]
                 block = parts[1]
                 recipient = get_banano_address(split[7])
-                print(parts)
                 amount = int(parts[2]) / 10 ** 29
                 if amount >= 50_000 and recipient != lastsender:
                     if sender == lastsender and not throttle:
@@ -54,27 +69,40 @@ def createServer():
                     else:
                         throttle = False
                         if amount >= 1_000_000:
-                            api.PostUpdate(sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nThe lambo has arrived" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block)
-                            print("Tweeted")
+                            tweet = sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nThe lambo has arrived" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block
+                            if lastTweet != tweet:
+                                api.PostUpdate(tweet)
                         elif amount >= 500_000:
-                            api.PostUpdate(sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nThey're going on holiday!!!" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block)
-                            print("Tweeted")
-
+                            tweet = sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nThey're going on holiday!!!" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block
+                            if lastTweet != tweet:
+                                api.PostUpdate(tweet)
                         elif amount >= 100_000:
-                            api.PostUpdate(sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nThis is a party!!" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block)
-                            print("Tweeted")
+                            tweet = sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nThis is a party!!" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block
+                            if lastTweet != tweet:
+                                api.PostUpdate(tweet)
                         elif amount >= 50_000:
-                            api.PostUpdate(sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nMaybe it's drugs!" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block)
-                            print("Tweeted")
-                    lastsender = sender
-                    lastamount = amount
+                            tweet = sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nMaybe it's drugs!" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block
+                            if lastTweet != tweet:
+                                api.PostUpdate(tweet)
+                lastsender = sender
+                lastamount = amount
 
     except KeyboardInterrupt:
         print("\nShutting down...\n")
     except Exception as exc :
+        tweet = "I fell over! :( Ping my owner to check on me"
+        serversocket.close()
+        if lastTweet != tweet:
+            api.PostUpdate(tweet)
         print("Error:\n")
-        print(exc)
+        print(exc, time.ctime())
+        time.sleep(300)
+        createServer()
 
     serversocket.close()
 
+
+
+
+print('Access http://localhost:13345')
 createServer()
