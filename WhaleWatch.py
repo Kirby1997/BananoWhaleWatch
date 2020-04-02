@@ -47,8 +47,9 @@ def createServer():
                 serversocket.bind((listenIP, listenPort))
                 serversocket.listen(5)
                 ipset = True
+                print("IP bound successfully - ", time.ctime())
             except Exception as exc:
-                print(exc)
+                print(exc, time.ctime())
                 print("IP not bound, sleeping and then trying again")
                 time.sleep(100)
         while(1):
