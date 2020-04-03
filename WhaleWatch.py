@@ -40,8 +40,11 @@ def send_tweet(lastTweet, tweet):
     except Exception as exc:
         print(exc)
         if (exc=="[{\'message\': \'Rate limit exceeded\', \'code\': 88}]"):
-            print("Rate limit has been hit. Sleeping for 15 minutes")
+            print("Rate limit has been hit. Sleeping for 15 minutes", time.ctime())
             time.sleep(900)
+        if (exc=="[{\'message\': \'Over capacity\', \'code\': 130}]"):
+            print("Twitter is sad right now. Sleeping for 10 minutes", time.ctime())
+            time.sleep(600)
         else:
             print("Well this happened...", time.ctime())
 
@@ -63,8 +66,8 @@ def createServer():
                 print("IP bound successfully - ", time.ctime())
             except Exception as exc:
                 print(exc, time.ctime())
-                print("IP not bound, sleeping and then trying again")
-                time.sleep(100)
+                print("IP not bound, sleeping for 5 and then trying again")
+                time.sleep(300)
         while(1):
             tweets = api.GetUserTimeline(user_id=twitacc, count=1)
             lastTweet = tweets[0].text
