@@ -91,25 +91,23 @@ def createServer():
                     if sender == lastsender and not throttle:
 
                         throttle = True
-                        api.PostUpdate(sender + " is sending many big payments!! Check them out!")
+                        tweet = sender + " is sending many big payments!! Check them out!"
+                        send_tweet(lastTweet, tweet)
                     else:
                         throttle = False
                         if amount >= 1_000_000:
                             tweet = sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nThe lambo has arrived" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block
-                            if lastTweet != tweet:
-                                api.PostUpdate(tweet)
+
                         elif amount >= 500_000:
                             tweet = sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nThey're going on holiday!!!" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block
-                            if lastTweet != tweet:
-                                api.PostUpdate(tweet)
+
                         elif amount >= 100_000:
                             tweet = sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nThis is a party!!" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block
-                            if lastTweet != tweet:
-                                api.PostUpdate(tweet)
+
                         elif amount >= 50_000:
                             tweet = sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nMaybe it's drugs!" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block
-                            if lastTweet != tweet:
-                                api.PostUpdate(tweet)
+                        send_tweet(lastTweet, tweet)
+
                     lastsender = sender
                     lastrecipient = recipient
                     lastamount = amount
