@@ -3,6 +3,7 @@ import socket
 import re
 import time
 import json
+import traceback
 
 with open("config.json") as config:
     config = json.load(config)
@@ -67,8 +68,8 @@ def createServer():
                 serversocket.listen(5)
                 ipset = True
                 print("IP bound successfully - ", time.ctime())
-            except Exception as exc:
-                print(exc, time.ctime())
+            except Exception:
+                print(traceback.format_exc(), time.ctime())
                 print("IP not bound, sleeping for 5 and then trying again")
                 time.sleep(300)
         while(1):
