@@ -50,7 +50,9 @@ def send_tweet(lastTweet, tweet):
 
 
 def createServer():
+
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     lastsender = ""
     lastamount = ""
     lastrecipient = ""
@@ -60,6 +62,7 @@ def createServer():
     try:
         while not ipset:
             try:
+
                 serversocket.bind((listenIP, listenPort))
                 serversocket.listen(5)
                 ipset = True
