@@ -103,7 +103,7 @@ def createServer():
                     else:
                         throttle = False
                         if amount >= 1_000_000:
-                            tweet = sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nThe lambo has arrived" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block
+                            tweet = "\U0001F6A8 \U0001F6A8 \U0001F6A8" + sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nThe lambo has arrived" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block + "\U0001F6A8 \U0001F6A8 \U0001F6A8"
 
                         elif amount >= 500_000:
                             tweet = sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nThey're going on holiday!!!" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block
