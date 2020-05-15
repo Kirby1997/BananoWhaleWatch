@@ -3,6 +3,7 @@ import socket
 import re
 import time
 import json
+import traceback
 
 with open("config.json") as config:
     config = json.load(config)
@@ -50,7 +51,9 @@ def send_tweet(lastTweet, tweet):
 
 
 def createServer():
+
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serversocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     lastsender = ""
     lastamount = ""
     lastrecipient = ""
@@ -60,12 +63,13 @@ def createServer():
     try:
         while not ipset:
             try:
+
                 serversocket.bind((listenIP, listenPort))
                 serversocket.listen(5)
                 ipset = True
                 print("IP bound successfully - ", time.ctime())
-            except Exception as exc:
-                print(exc, time.ctime())
+            except Exception:
+                print(traceback.format_exc(), time.ctime())
                 print("IP not bound, sleeping for 5 and then trying again")
                 time.sleep(300)
         while(1):
@@ -99,7 +103,7 @@ def createServer():
                     else:
                         throttle = False
                         if amount >= 1_000_000:
-                            tweet = sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nThe lambo has arrived" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block
+                            tweet = "\U0001F6A8 \U0001F6A8 \U0001F6A8" + sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nThe lambo has arrived" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block + "\U0001F6A8 \U0001F6A8 \U0001F6A8"
 
                         elif amount >= 500_000:
                             tweet = sender[:16] + "... sent " + str(amount) + " $BAN to " + recipient[:16] + "...\nThey're going on holiday!!!" + "\nBlock: " + "https://creeper.banano.cc/explorer/block/" + block
