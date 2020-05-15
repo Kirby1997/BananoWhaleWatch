@@ -90,7 +90,7 @@ def createServer():
                 block = parts[1]
                 recipient = get_banano_address(split[7])
                 amount = int(parts[2]) / 10 ** 29
-                if amount >= 50_000 and recipient != lastsender and (sender != lastrecipient and amount != lastamount):
+                if amount >= 100_000 and recipient != lastsender and (sender != lastrecipient and amount != lastamount):
                     if sender == lastsender and not throttle:
 
                         throttle = True
